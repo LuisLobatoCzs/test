@@ -1,0 +1,186 @@
+<style>
+    .cuadro{
+        padding: 10px;
+        text-align: center;
+        border-radius: 15px;
+    }
+    .etiqueta{
+        text-align: right;
+    }
+    .altura{
+        height: 655px;
+        width: 200px;
+    }
+    .altura2{
+        height: 80px;
+    } 
+    .fondo{
+        background-color: #ffffff;
+    }
+</style>
+
+<!DOCTYPE HTML>
+<html  ng-app="tiendita">
+    <head>
+        <meta charset="UTF-8">
+        <title>Tiendita con AngularJS</title>
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="src/css/bootstrap.min.css">
+        <script src="src/js/bootstrap.min.js"></script>
+        <!-- AngularJS -->
+        <script src="src/js/angularJS/1.8.2.js  "></script>
+        <script type="text/javascript" src="controllers/indexController.js"></script>
+    </head>
+    <body ng-controller="controllerTiendita">
+        <div class="container">
+            <div class="row">   
+                <div class="col-6 | cuadro"  ng-cloak>
+                    <div class="row | cuadro">
+                        <div class="col-12 | cuadro | border border-dark">
+                            <br>
+                            <h5> Forma de pago </h5>
+                            <br>
+                            <div class="row">
+                                <div class="col-4 | etiqueta">
+                                    Forma de pago:
+                                </div> 
+                                <select class="col-6 | form-select" ng-model="nuevoPago.formaPago">
+                                    <option value="">Seleccione</option>
+                                    <option ng-repeat="fp in fPago" value="{{fp}}">{{fp}}</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-4 | etiqueta">
+                                    Importe:
+                                </div>
+                                <input class="col-6" ng-model="nuevoPago.importe">
+                            </div>
+                            <br>
+                            <div class="row | justify-content-center">
+                                <div class="col-4"></div>
+                                <button class="col-4 | btn fondo | border border-dark" ng-click="setPago()">Pagar</button>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    
+                    <div class="row | cuadro">
+                        <div class="col-12 | cuadro | border border-dark">
+                            <br>
+                            <h5> Artículos </h5>
+                            <br>
+                            <div class="row">
+                                <div class="col-3 | etiqueta">
+                                    Artículo:
+                                </div>
+                                <select ng-init="products = [{nombre: 'Laptop'}, {nombre: 'Mouse'}]" class="col-7 | form-select" ng-model="nuevoArticulo.producto">
+                                    <option value="">Seleccione</option>
+                                    <option ng-repeat="p in products" value="{{p.nombre}}">{{p.nombre}}</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-1"></div>
+                                <div class="col-2">
+                                    Unidades:
+                                </div>
+                                <input class="col-2" ng-model="nuevoArticulo.cantidad">
+
+                                <div class="col-3">
+                                    Precio unitario:
+                                </div>
+                                <input class="col-2" ng-model="nuevoArticulo.precioUnitario">
+                                <div class="col-1"></div>
+                            </div>
+                            <br>
+                            <div class="row | justify-content-center">
+                                <div class="col-4"></div>
+                                <button class="col-4 | btn fondo | border border-dark" ng-click="setArticulo()">Agregar al carrito</button>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+
+                    <div class="row | cuadro">
+                        <div class="col-12 | cuadro | altura2 | border border-dark">
+                            <br>
+                            <h5> Total: ${{total}}</h5>
+                            <br><br>
+                        </div>
+                    </div>  
+                </div>
+
+                <div class="col-6 | cuadro"  ng-cloak>
+                    <div class="row | cuadro">
+                        <div class="col-12 | cuadro | altura | border border-dark">
+                            <br>
+                            <h5> Carrito de compras </h5>
+                            <br>
+                            <div class="row">
+                                <table class="table | col-12" ng-show="carrito">
+                                    <thead>
+                                        <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">Precio unitario</th>
+                                        <th scope="col">Cantidad</th>
+                                        <th scope="col">Importe</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="articulo in articulos" ng-copy="copy(articulo.producto)">
+                                            <td>{{articulo.num}}</td>
+                                            <td>{{articulo.producto}}</td>
+                                            <td>{{articulo.precioUnitario}}</td>
+                                            <td>{{articulo.cantidad}}</td>
+                                            <td>{{articulo.importe}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>       
+            <div class="row | cuadro">
+                <div class="col-12 | cuadro | border border-dark">
+                    <br>
+                    <h5>Historial de pagos</h5>
+                    <br> 
+                    <div class="input-group-text">
+                        <input type="checkbox" class="col-4" ng-model="check">
+                        <button class="col-4 | btn fondo | border border-dark" ng-disabled="!check" ng-click="mostrarPagos()" ng-show="!mostrar">Mostrar pagos</button>
+                        <button class="col-4 | btn fondo | border border-dark" ng-disabled="!check" ng-click="mostrarPagos()" ng-show="mostrar">Ocultar pagos</button>
+                    </div>
+                    
+                    <br><br>
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="table" ng-if="mostrar">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Forma de pago</th>
+                                        <th scope="col">Importe</th>
+                                        <th scope="col">Comisión</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="pago in pagos">
+                                        <td>{{pago.num}}</td>
+                                        <td>{{pago.formaPago}}</td>
+                                        <td>{{pago.importe}}</td>
+                                        <td>{{pago.comision}}</td>
+                                        <td>{{pago.total}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+    </body>
+</html>
